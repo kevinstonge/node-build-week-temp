@@ -7,5 +7,6 @@ server.use(require('helmet')());
 
 server.get('/', (req, res) => { res.status(200).json({ message: "server online!" }) });
 
+server.use('/api/users', require('./api/users/usersRouter.js'));
 
 module.exports = server;
