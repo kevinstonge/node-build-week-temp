@@ -1,5 +1,9 @@
 const request = require('supertest');
 const server = require('../server.js');
+const db = require('../data/dbConfig.js');
+beforeAll(() => {
+    return db('users').truncate();
+})
 describe('GET request to /', () => {
     it('should return message indicating that the server is online', async () => {
             const result = await request(server).get('/');
