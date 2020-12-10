@@ -48,10 +48,11 @@ describe('POST request to /api/users/register', () => {
         });
     });
     describe('given valid input', () => {
-        it('should respond with a message confirming successful registration', async () => {
+        it('should respond with a message confirming successful registration and provide a JWT', async () => {
             const result = await request(server).post('/api/users/register').send(userRegInput[0]);
             expect(result.body.message).toContain('registration successful');
             expect(result.status).toBe(201);
-        })
+            expect(result.body.token).toMatch(/^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$/);
+        });
     })
 })

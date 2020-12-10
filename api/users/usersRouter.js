@@ -1,5 +1,7 @@
 const router = require('express').Router();
 const Users = require('./usersModel.js');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const validateRegistrationInput = require('../middleware/validateRegistrationInput');
 router.post('/register', validateRegistrationInput, async (req, res) => {
     try {
@@ -8,10 +10,11 @@ router.post('/register', validateRegistrationInput, async (req, res) => {
             res.status(400).json({ error: "that username already exists" })
         }
         else {
-            const hash = password;
+            const hash = bcrypt.hashSync(password);
             const newUserObject = { username, email, password: hash }
             const newUserId = await Users.createUser(newUserObject);
-            res.status(201).json({ message: "registration successful", newUserId })
+            const token = jwt.sign({ username },process.env.JWT_SECRET,{expiresIn:'7d'});
+            res.status(201).json({ message: "registration successful", newUserId, token })
         }
     }
     catch (error) {
