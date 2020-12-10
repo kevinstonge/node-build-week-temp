@@ -11,5 +11,4 @@ module.exports = (req, res, next) => {
     else {
         res.status(400).json({error: "you must provide a username"})
     }
-    next();
 }
