@@ -11,11 +11,7 @@ describe('GET request to /', () => {
     })
 })
 
-const userRegInput = [
-    { username: "asdf1", email: "asdf1@gmail.com", password: "asdf1" },
-    { username: "asdf2", email: "asdf2@gmail.com", password: "asdf2" },
-    { username: "asdf3", email: "asdf3@gmail.com", password: "asdf3" },
-]
+const userRegInput = require('./userInfo.js');
 
 describe('POST request to /api/users/register', () => {
     describe('given incomplete input', () => {
@@ -54,5 +50,32 @@ describe('POST request to /api/users/register', () => {
             expect(result.status).toBe(201);
             expect(result.body.token).toMatch(/^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$/);
         });
+    })
+});
+
+describe('post request to /api/users/login', () => {
+    describe('given valid credentials', () => {
+        it('should respond with a message confirming successful login and provide a JWT', async () => {
+            const result = await request(server).post('/api/users/login').send(userRegInput[0]);
+            expect(result.body.message).toContain('login successful');
+            expect(result.status).toBe(200);
+            expect(result.body.token).toMatch(/^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$/);
+        })
+    });
+    describe('given invalid credentials', () => {
+        describe('non-existant username', async () => {
+            it('should respond with a message indicating that the username does not exist', async () => {
+                const result = await request(server).post('/api/users/login').send(userRegInput[1]);
+                expect(result.body.error).toBe('username does not exist');
+                expect(result.status).toBe(400);
+            })
+        })
+        describe('incorrect password', async () => {
+            it('should respond with a message indicating that the password is incorrect', async () => {
+                const result = await request(server).post('/api/users/login').send({ ...userRegInput[0], password: "fdsa" })
+                expect(result.body.error).toBe('incorrect password');
+                expect(result.status).toBe(401);
+            })
+        })  
     })
 })

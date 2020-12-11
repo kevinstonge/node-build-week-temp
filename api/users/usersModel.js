@@ -1,7 +1,21 @@
 const db = require('../../data/dbConfig.js');
 
-const createUser = (newUserObject) => {
-    db('users').insert(newUserObject).then(r=>r).catch(e=>e);
+const createUser = async (newUserObject) => {
+    try {
+        return await db('users').insert(newUserObject)
+    }
+    catch (error) {
+        throw error;
+    }
 }
 
-module.exports = { createUser }
+const getUserByUsername = async (username) => {
+    try {
+        return await db('users').where({ username }).first();
+    }
+    catch (error) {
+        throw error;
+    }
+}
+
+module.exports = { createUser, getUserByUsername }
